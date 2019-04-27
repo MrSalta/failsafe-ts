@@ -1,0 +1,23 @@
+{
+  "name": "failsafe-ts",
+  "version": "1.0.0",
+  "description": "New TS version",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrSalta/failsafe-ts.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MrSalta/failsafe-ts/issues"
+  },
+  "homepage": "https://github.com/MrSalta/failsafe-ts#readme",
+  "dependencies": {
+    "discord.js": "^11.4.2",
+    "dotenv": "^7.0.0"
+  }
+}
