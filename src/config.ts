@@ -1,6 +1,6 @@
 export const config = {
-    'prefix': '?',
-    'commands': [
-        'testCommand',
-    ],
+  'prefix': '?',
+  'commands': [
+    'testCommand',
+  ],
 };

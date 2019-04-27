@@ -10,67 +10,67 @@ const commands: IBotCommand[] = [];
 
 async function handleCommand(msg: Discord.Message) {
 
-    // Split string into the args
-    const command = msg.content.split(' ')[0].replace(ConfigFile.config.prefix, '');
-    const args = msg.content.split(' ').slice(1);
+  // Split string into the args
+  const command = msg.content.split(' ')[0].replace(ConfigFile.config.prefix, '');
+  const args = msg.content.split(' ').slice(1);
 
-    for (const commandClass of commands) {
+  for (const commandClass of commands) {
 
-        // Attempt to execute, but ready for it not to work
-        try {
+    // Attempt to execute, but ready for it not to go well or younkow
+    try {
 
-            // Check if our command class is the right one
-            if (!commandClass.isThisCommand(command)) {
+      // Check if our command class is the right one
+      if (!commandClass.isThisCommand(command)) {
 
-                // Keep looping if no
-                continue;
-            }
+        // Keep looping if no
+        continue;
+      }
 
-            // Run command
-            await commandClass.runCommand(args, msg, client);
-        }
-        catch (exception) {
-
-            // IfError, log it
-            console.log(exception);
-        }
+      // Run command
+      await commandClass.runCommand(args, msg, client);
     }
+    catch (exception) {
+
+      // IfError, log it
+      console.log(exception);
+    }
+  }
 }
 
 function loadCommands(commandsPath: string) {
 
-    // Stop if no commands
-    if (!ConfigFile.config || (ConfigFile.config.commands as string[]).length === 0) { return; }
+  // Stop if no commands
+  if (!ConfigFile.config || (ConfigFile.config.commands as string[]).length === 0) { return; }
 
-    // Loop through to find command in config file
-    for (const commandName of ConfigFile.config.commands as string[]) {
+  // Loop through to find command in config file
+  for (const commandName of ConfigFile.config.commands as string[]) {
 
-        const commandsClass = require(`${commandsPath}/${commandName}`).default;
+    const commandsClass = require(`${commandsPath}/${commandName}`).default;
 
-        const command = new commandsClass() as IBotCommand;
+    const command = new commandsClass() as IBotCommand;
 
-        commands.push(command);
-    }
+    commands.push(command);
+  }
 }
 
 loadCommands(`${__dirname}/commands`);
 
 client.on('ready', () => {
 
-    // Online Message
-    console.log('Ready to go!');
+  // Online Message
+  console.log('Ready to go!');
 });
 
 client.on('message', msg => {
 
-    // Not from bot
-    if (msg.author.bot) { return; }
+  // Not from bot
+  if (msg.author.bot) { return; }
 
-    // Also look for prefix
-    if (!msg.content.startsWith(ConfigFile.config.prefix)) { return; }
+  // Also look for prefix
+  if (!msg.content.startsWith(ConfigFile.config.prefix)) { return; }
 
-    // Handle the command
-    handleCommand(msg);
+  // Handle the command
+  handleCommand(msg);
 });
 
 client.login(BOT_TOKEN);
