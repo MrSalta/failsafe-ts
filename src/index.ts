@@ -11,7 +11,7 @@ const commands: IBotCommand[] = [];
 async function handleCommand(msg: Discord.Message) {
 
   // Split string into the args
-  const command = msg.content.split(' ')[0].replace(ConfigFile.config.prefix, '');
+  const command = msg.content.split(' ')[0].replace(ConfigFile.config.prefix, '').toLowerCase;
   const args = msg.content.split(' ').slice(1);
 
   for (const commandClass of commands) {
@@ -66,6 +66,7 @@ client.on('message', msg => {
   // Not from bot
   if (msg.author.bot) { return; }
 
+  if (msg.channel.type == 'dm') { return; }
   // Also look for prefix
   if (!msg.content.startsWith(ConfigFile.config.prefix)) { return; }
 

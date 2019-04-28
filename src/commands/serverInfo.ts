@@ -1,11 +1,12 @@
 import * as Discord from 'discord.js';
 import { IBotCommand } from '../api';
 
-export default class TestCommand implements IBotCommand {
+export default class TemplateCommand implements IBotCommand {
+  private readonly _command = 'templatecommand'
 
-  private readonly _command = 'testCommand'
   help(): string {
-    return 'This is just here for funzies.';
+    // eslint-disable-next-line quotes
+    return `This command doesn't do anything`;
   }
 
   isThisCommand(command: string): boolean {
@@ -14,7 +15,7 @@ export default class TestCommand implements IBotCommand {
 
   async runCommand(args: string[], msgObject: Discord.Message, client: Discord.Client): Promise<void> {
 
-    // Just testing
-    msgObject.channel.send('It worked!');
+    // Did it work?
+    msgObject.channel.send('All loaded and good.');
   }
 }
