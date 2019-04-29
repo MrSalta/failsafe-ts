@@ -1,6 +1,7 @@
 import * as Discord from 'discord.js';
 import { IBotCommand } from '../api';
 import * as ConfigFile from '../config';
+import * as Menus from './data/menus';
 
 export default class Poll implements IBotCommand {
 
@@ -24,38 +25,46 @@ export default class Poll implements IBotCommand {
 
     const pollDesc = args.join(' ');
 
-    const pollEmbed = new Discord.RichEmbed()
-      .setTitle('Poll')
-      .setColor('purple')
-      .setDescription(pollDesc);
+    const pollEmbed = Menus.menus[0].gameMenu;
 
     const pollMessage = await msgObject.channel.send(pollEmbed);
 
     await (pollMessage as Discord.Message).react(ConfigFile.config.reactionNumbers[1]);
     await (pollMessage as Discord.Message).react(ConfigFile.config.reactionNumbers[2]);
 
-    const filter = (reaction: Discord.MessageReaction, user: Discord.User) =>
-      reaction.emoji.name === ConfigFile.config.reactionNumbers[1] ||
-      reaction.emoji.name === ConfigFile.config.reactionNumbers[2];
+    const filter = (reaction: Discord.MessageReaction, user: Discord.User) => {
+      return [
+        ConfigFile.config.reactionNumbers[1],
+        ConfigFile.config.reactionNumbers[2],
+      ].includes(reaction.emoji.name) && user.id === msgObject.author.id;
+    };
 
-    try {
-      const results = await (pollMessage as Discord.Message).awaitReactions(filter, { time: 10000 });
 
-      const resultsEmbed = new Discord.RichEmbed()
-        .setTitle('Poll Results')
-        .setDescription(`Results for Poll ${pollDesc}`)
-        .addField(`${ConfigFile.config.reactionNumbers[1]}`, `${results.get(ConfigFile.config.reactionNumbers[1]).count - 1} votes`)
-        .addField(`${ConfigFile.config.reactionNumbers[2]}`, `${results.get(ConfigFile.config.reactionNumbers[2]).count - 1} votes`);
+    await (pollMessage as Discord.Message).awaitReactions(filter, { max: 1, time: 10000 })
+      .then(collected => {
+        const reaction = collected.first();
 
-      msgObject.channel.send(resultsEmbed);
-      (pollMessage as Discord.Message).delete(0);
-      console.log(`Results for poll "${pollDesc}" posted`);
-      return;
-    }
-    catch {
-      msgObject.channel.send('No results to the poll in time!');
-      console.log('After 10 seconds, no answers');
-      (pollMessage as Discord.Message).delete(0);
-    }
+        try {
+          if (reaction.emoji.name === ConfigFile.config.reactionNumbers[1]) {
+            const gameChoice = 'Destiny 2';
+            console.log(`${msgObject.author.username} chose ${gameChoice}`);
+            msgObject.channel.send('Destiny 2 Selected');
+            (pollMessage as Discord.Message).edit(Menus.menus[1].destinyMenu);
+            return;
+          }
+          if (reaction.emoji.name === ConfigFile.config.reactionNumbers[2]) {
+            const gameChoice = 'Overwatch';
+            console.log(`${msgObject.author.username} chose ${gameChoice}`);
+            msgObject.channel.send('Overwatch Selected');
+            (pollMessage as Discord.Message).edit(Menus.menus[1].destinyMenu);
+            return;
+          }
+        }
+        catch {
+          msgObject.channel.send('No results to the poll in time!');
+          console.log('After 10 seconds, no answers');
+          (pollMessage as Discord.Message).delete(0);
+        }
+      });
   }
 }
