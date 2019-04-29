@@ -1,8 +1,9 @@
 import * as Discord from 'discord.js';
 import { IBotCommand } from '../api';
 
-export default class TemplateCommand implements IBotCommand {
-  private readonly _command = 'templatecommand'
+export default class ServerInfo implements IBotCommand {
+
+  private readonly _command = 'serverinfo'
 
   help(): string {
     // eslint-disable-next-line quotes
@@ -16,6 +17,11 @@ export default class TemplateCommand implements IBotCommand {
   async runCommand(args: string[], msgObject: Discord.Message, client: Discord.Client): Promise<void> {
 
     // Did it work?
-    msgObject.channel.send('All loaded and good.');
+    const embed = new Discord.RichEmbed()
+      .setColor('#253b56')
+      .setTitle('Server Info');
+
+    msgObject.channel.send(embed)
+      .catch(console.error);
   }
 }

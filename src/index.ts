@@ -11,7 +11,7 @@ const commands: IBotCommand[] = [];
 async function handleCommand(msg: Discord.Message) {
 
   // Split string into the args
-  const command = msg.content.split(' ')[0].replace(ConfigFile.config.prefix, '').toLowerCase;
+  const command = msg.content.split(' ')[0].replace(ConfigFile.config.prefix, '').toLowerCase();
   const args = msg.content.split(' ').slice(1);
 
   for (const commandClass of commands) {
@@ -28,6 +28,7 @@ async function handleCommand(msg: Discord.Message) {
 
       // Run command
       await commandClass.runCommand(args, msg, client);
+
     }
     catch (exception) {
 
