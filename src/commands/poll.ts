@@ -40,15 +40,16 @@ export default class Poll implements IBotCommand {
     };
 
 
-    await (pollMessage as Discord.Message).awaitReactions(filter, { max: 1, time: 10000 })
+    await (pollMessage as Discord.Message).awaitReactions(filter, { max: 1, time: 60000 })
       .then(collected => {
         const reaction = collected.first();
 
         try {
           if (reaction.emoji.name === ConfigFile.config.reactionNumbers[1]) {
+            reaction.remove(reaction.users.filter(u => u === msgObject.author).first());
             const gameChoice = 'Destiny 2';
             console.log(`${msgObject.author.username} chose ${gameChoice}`);
-            msgObject.channel.send('Destiny 2 Selected');
+            msgObject.channel.send(`${gameChoice}`);
             (pollMessage as Discord.Message).edit(Menus.menus[1].destinyMenu);
             return;
           }
@@ -61,8 +62,8 @@ export default class Poll implements IBotCommand {
           }
         }
         catch {
-          msgObject.channel.send('No results to the poll in time!');
-          console.log('After 10 seconds, no answers');
+          msgObject.channel.send('No selection in time!');
+          console.log('After a minute, no answers');
           (pollMessage as Discord.Message).delete(0);
         }
       });
