@@ -1,4 +1,5 @@
 import * as Discord from 'discord.js';
+import * as Icons from '../data/icons';
 
 export const menus = [
   {
@@ -18,8 +19,11 @@ export const menus = [
       .setTimestamp()
       .setFooter('Some footer text here', 'https://cdn.discordapp.com/embed/avatars/0.png'),
   },
+];
+
+export const destinyMenus = [
   {
-    destinyMenu: new Discord.RichEmbed()
+    destinyMain: new Discord.RichEmbed()
       .setColor('#346f41')
       .setTitle('Destiny Menu')
       .setURL('http://www.example.com')
@@ -32,6 +36,23 @@ export const menus = [
       .addField('3️⃣ Raid', '--', true)
       .addField('4️⃣ Crucible', '--', true)
       .setImage('https://cdn.discordapp.com/embed/avatars/0.png')
+      .setTimestamp()
+      .setFooter('Some footer text here', 'https://cdn.discordapp.com/embed/avatars/0.png'),
+  },
+  {
+    destinyRaids: new Discord.RichEmbed()
+      .setColor('#346f41')
+      .setTitle('Destiny Raids')
+      .setURL('http://www.example.com')
+      .setDescription('d2 raids')
+      .setThumbnail('https://alternative.me/icons2/destiny.png')
+      .addField('Regular field title', 'Some value here')
+      .addBlankField()
+      .addField('1️⃣ Leviathan', '--', true)
+      .addField('2️⃣ Eater of Worlds', '--', true)
+      .addField('3️⃣ Spire of Stars', '--', true)
+      .addField('4️⃣ The Last Wish', '--', true)
+      .setImage(Icons.icons.Raid)
       .setTimestamp()
       .setFooter('Some footer text here', 'https://cdn.discordapp.com/embed/avatars/0.png'),
   },
