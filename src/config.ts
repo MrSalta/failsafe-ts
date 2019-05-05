@@ -1,11 +1,8 @@
 export const config = {
-  'prefix': '?',
-  'commands': [
-    'testCommand',
-    'serverinfo',
-    'poll',
-  ],
-  'reactionNumbers': [
+  prefix: '?',
+  commands: ['testCommand', 'serverinfo', 'poll', 'destiny2'],
+  menus: ['destiny2'],
+  reactionNumbers: [
     '\u0030\u20E3',
     '\u0031\u20E3',
     '\u0032\u20E3',
