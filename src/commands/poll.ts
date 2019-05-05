@@ -61,13 +61,25 @@ export default class Poll implements IBotCommand {
             const gameChoice = 'Destiny 2';
             console.log(`${msgObject.author.username} chose ${gameChoice}`);
             msgObject.channel.send(`${gameChoice}`);
-            (pollMessage as Discord.Message).edit(Menus.destinyMenus[1].destinyRaids);
+            (pollMessage as Discord.Message).edit(Menus.destinyMenus[1].destinyRaids)
+            // Run Raid Menu  
+            .then(async d2RaidMenu => {
+                await (d2RaidMenu as Discord.Message).react(ConfigFile.config.reactionNumbers[3]);
+                await (d2RaidMenu as Discord.Message).react(ConfigFile.config.reactionNumbers[4]);
 
-            await(pollMessage as Discord.Message).react(ConfigFile.config.reactionNumbers[3]);
-            await(pollMessage as Discord.Message).react(ConfigFile.config.reactionNumbers[4]);
+                await (d2RaidMenu as Discord.Message).awaitReactions(filter, { max: 1, time: 60000 })
+                .then(collected => {
+                  const reaction = collected.first();
+
+                  try{
+
+                  // Raid Menu
+                  
+                  }
 
 
-          }
+                })
+              }
           if (reaction.emoji.name === ConfigFile.config.reactionNumbers[2]) {
             const gameChoice = 'Overwatch';
             console.log(`${msgObject.author.username} chose ${gameChoice}`);
