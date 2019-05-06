@@ -21,7 +21,9 @@ export default class Destiny2 implements IBotMenu {
     );
     const gameChoice = args[0];
     const pollMessage = await (msgObject as Discord.Message).edit(Menus.destinyMenus[0].destinyMain);
-    const breadcrumbs = msgObject.channel.send(`${gameChoice}`);
+    await msgObject.channel.send(`${gameChoice}`);
+    const bc = msgObject.id;
+    console.log(`${bc}`);
 
     const filter = (reaction: Discord.MessageReaction) => {
       return (
@@ -53,7 +55,7 @@ export default class Destiny2 implements IBotMenu {
             );
             activityChoice = 'Gambit';
             console.log(`${user.username} chose ${activityChoice}`);
-            breadcrumbs[0].edit(`${gameChoice} -> ${activityChoice}`);
+            msgObject.edit(`${gameChoice} -> ${activityChoice}`);
 
             // Run Gambit Menu
             (pollMessage as Discord.Message).edit(Menus.destinyMenus[0].destinyMain);
