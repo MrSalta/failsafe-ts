@@ -68,6 +68,7 @@ export const destinyMenus = [
       .addField('2️⃣ Eater of Worlds', '--', true)
       .addField('3️⃣ Spire of Stars', '--', true)
       .addField('4️⃣ The Last Wish', '--', true)
+      .addField('5️⃣ Scourge of the Past', '--', true)
       .setImage(Icons.icons.Raid)
       .setTimestamp()
       .setFooter('Some footer text here', 'https://cdn.discordapp.com/embed/avatars/0.png'),

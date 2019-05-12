@@ -56,11 +56,9 @@ export default class Destiny2 implements IBotMenu {
             );
             activityChoice = 'Gambit';
             console.log(`${user.username} chose ${activityChoice}`);
-            const Message = await msgObject.channel.fetchMessage(bc);
-            await Message.edit(`${gameChoice} -> ${activityChoice}`);
 
             // Run Gambit Menu
-            (pollMessage as Discord.Message).edit(Menus.destinyMenus[0].destinyMain);
+            (pollMessage as Discord.Message).edit(Menus.destinyMenus[1].destinyGambit);
 
           }
 

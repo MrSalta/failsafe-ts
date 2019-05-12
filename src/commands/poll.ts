@@ -2,6 +2,8 @@ import * as Discord from 'discord.js';
 import { IBotMenu } from '../api';
 import * as ConfigFile from '../config';
 import * as Menus from '../data/menus';
+import * as SQLite from 'better-sqlite3';
+const sql = new SQLite('../record.sqlite');
 
 // Load client and declare variable
 const client: Discord.Client = this.Client;
@@ -70,8 +72,11 @@ export default class Poll implements IBotMenu {
 
   async runCommand(args: string[], msgObject: Discord.Message, _client: Discord.Client): Promise<void> {
     await msgObject.delete(0);
+    const theTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    let event = undefined;
+    event = { id: `${msgObject.author.id}-${theTime}, user: ${msgObject.author.username}` };
     console.log(
-      `Command ${this._menu} started by ${msgObject.author.username}.`);
+      `Command ${this._menu} created id ${event.id} and was started by ${msgObject.author.username}.`);
 
     if (args.length < 1) { return; }
 
@@ -124,7 +129,7 @@ export default class Poll implements IBotMenu {
             );
             gameChoice = 'Destiny2';
             console.log(`${msgObject.author.username} chose ${gameChoice}`);
-
+            sql.exec(`INSERT INTO events WHERE id = ${event.id} (game) VALUES (${gameChoice});`);
             // Run Destiny2 Menu Module
             handleMenu(pollMessage as Discord.Message, msgObject.author);
 
