@@ -27,6 +27,9 @@ function loadMenus(menusPath: string) {
     menus.push(menu);
   }
 }
+// Prepare statements for SQLite
+let event;
+
 async function handleMenu(msg: Discord.Message, user: Discord.User) {
 
   // Split string into the args
@@ -72,16 +75,23 @@ export default class Poll implements IBotMenu {
 
   async runCommand(args: string[], msgObject: Discord.Message, _client: Discord.Client): Promise<void> {
     await msgObject.delete(0);
+
+    // Get current time for ID purposes
     const theTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    let event = undefined;
-    event = { id: `${msgObject.author.id}-${theTime}, user: ${msgObject.author.username}` };
+
+    // Create event in database
+    event = { id: `${msgObject.author.id}-${theTime}`, user: msgObject.author.username };
+    const newEvent = sql.prepare('INSERT OR REPLACE INTO eventLog (id, user) VALUES (@id, @user);');
+    await newEvent.run(event);
     console.log(
       `Command ${this._menu} created id ${event.id} and was started by ${msgObject.author.username}.`);
 
+    // Format check
     if (args.length < 1) { return; }
 
     const pollDesc = args.join(' ');
 
+    // Send first menu
     const pollEmbed = Menus.menus[0].gameMenu;
 
     const pollMessage = await msgObject.channel.send(pollEmbed);
@@ -127,9 +137,13 @@ export default class Poll implements IBotMenu {
             reaction.remove(
               reaction.users.filter(u => u === msgObject.author).first()
             );
+
+            // Log and add choice to database
             gameChoice = 'Destiny2';
             console.log(`${msgObject.author.username} chose ${gameChoice}`);
-            sql.exec(`INSERT INTO events WHERE id = ${event.id} (game) VALUES (${gameChoice});`);
+            const gameResult = sql.prepare(`INSERT OR REPLACE INTO eventLog WHERE id = ${event.id} (game) VALUES (${gameChoice});`);
+            gameResult.run();
+
             // Run Destiny2 Menu Module
             handleMenu(pollMessage as Discord.Message, msgObject.author);
 

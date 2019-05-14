@@ -3,7 +3,7 @@ import * as ConfigFile from './config';
 import { IBotCommand } from './api';
 require('dotenv').config();
 import * as SQLite from 'better-sqlite3';
-const sql = new SQLite('../record.sqlite');
+const sql = new SQLite('./record.sqlite');
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
 
