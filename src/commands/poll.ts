@@ -27,8 +27,6 @@ function loadMenus(menusPath: string) {
     menus.push(menu);
   }
 }
-// Prepare statements for SQLite
-let event;
 
 async function handleMenu(msg: Discord.Message, user: Discord.User) {
 
@@ -80,7 +78,7 @@ export default class Poll implements IBotMenu {
     const theTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     // Create event in database
-    event = { id: `${msgObject.author.id}-${theTime}`, user: msgObject.author.username };
+    const event = { id: `${msgObject.author.id}-${theTime}`, user: msgObject.author.username };
     const newEvent = sql.prepare('INSERT OR REPLACE INTO eventLog (id, user) VALUES (@id, @user);');
     await newEvent.run(event);
     console.log(
@@ -88,8 +86,6 @@ export default class Poll implements IBotMenu {
 
     // Format check
     if (args.length < 1) { return; }
-
-    const pollDesc = args.join(' ');
 
     // Send first menu
     const pollEmbed = Menus.menus[0].gameMenu;
@@ -141,8 +137,8 @@ export default class Poll implements IBotMenu {
             // Log and add choice to database
             gameChoice = 'Destiny2';
             console.log(`${msgObject.author.username} chose ${gameChoice}`);
-            const gameResult = sql.prepare(`INSERT OR REPLACE INTO eventLog WHERE id = ${event.id} (game) VALUES (${gameChoice});`);
-            gameResult.run();
+            const gameResult = sql.prepare(`INSERT OR REPLACE INTO eventLog WHERE id = ${event.id} (game) VALUES @gameChoice);`);
+            gameResult.run(gameChoice);
 
             // Run Destiny2 Menu Module
             handleMenu(pollMessage as Discord.Message, msgObject.author);
