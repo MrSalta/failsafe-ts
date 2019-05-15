@@ -80,7 +80,7 @@ export default class Poll implements IBotMenu {
     // Create event in database
     const event = { id: `${msgObject.author.id}-${theTime}`, user: msgObject.author.username };
     const newEvent = sql.prepare('INSERT OR REPLACE INTO eventLog (id, user) VALUES (@id, @user);');
-    await newEvent.run(event);
+    newEvent.run(event);
     console.log(
       `Command ${this._menu} created id ${event.id} and was started by ${msgObject.author.username}.`);
 
@@ -123,7 +123,7 @@ export default class Poll implements IBotMenu {
 
     await (pollMessage as Discord.Message)
       .awaitReactions(filter, { max: 1, time: 60000 })
-      .then(collected => {
+      .then(async collected => {
         const reaction = collected.first();
 
         try {
@@ -137,8 +137,9 @@ export default class Poll implements IBotMenu {
             // Log and add choice to database
             gameChoice = 'Destiny2';
             console.log(`${msgObject.author.username} chose ${gameChoice}`);
-            const gameResult = sql.prepare(`INSERT OR REPLACE INTO eventLog WHERE id = ${event.id} (game) VALUES @gameChoice);`);
-            gameResult.run(gameChoice);
+            const gameResult = sql.prepare(`UPDATE INTO eventLog WHERE id = ${event.id} (game) VALUES (?);`);
+            const eventGame = gameResult.run(gameChoice);
+            console.log(eventGame.changes);
 
             // Run Destiny2 Menu Module
             handleMenu(pollMessage as Discord.Message, msgObject.author);
