@@ -19,6 +19,8 @@ export default class Destiny2 implements IBotMenu {
   }
 
   async runCommand(args: string[], msgObject: Discord.Message, client: Discord.Client, user: Discord.User): Promise<void> {
+
+    // First: Retrieve the event information from our database
     const dbEntry = args[0];
     const stmt = sql.prepare('SELECT * FROM eventLog WHERE id = ?');
     const event = stmt.get(`${args[0]}`);
@@ -28,9 +30,6 @@ export default class Destiny2 implements IBotMenu {
 
 
     const pollMessage = await (msgObject as Discord.Message).edit(Menus.destinyMenus[0].destinyMain);
-    await msgObject.channel.send('Worked');
-    const bc = await msgObject.id;
-    await console.log(`${bc}`);
 
     const filter = (reaction: Discord.MessageReaction) => {
       return (
@@ -61,6 +60,9 @@ export default class Destiny2 implements IBotMenu {
               reaction.users.filter(u => u === user).first()
             );
             activityChoice = 'Gambit';
+            const activityResult = sql.prepare('UPDATE eventLog SET activity = ?, playerCount = ? WHERE id = ?;');
+            const eventActivity = activityResult.run(`${activityChoice}`, 4, `${event.id}`);
+            console.log(eventActivity.changes);
             console.log(`${user.username} chose ${activityChoice}`);
 
             // Run Gambit Menu
