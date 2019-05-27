@@ -2,6 +2,8 @@ import * as Discord from 'discord.js';
 import { IBotMenu } from '../../api';
 import * as Menus from '../../data/menus';
 import * as ConfigFile from '../.././config';
+import * as SQLite from 'better-sqlite3';
+const sql = new SQLite('./record.sqlite');
 
 let activityChoice: string = undefined;
 
@@ -17,12 +19,16 @@ export default class Destiny2 implements IBotMenu {
   }
 
   async runCommand(args: string[], msgObject: Discord.Message, client: Discord.Client, user: Discord.User): Promise<void> {
+    const dbEntry = args[0];
+    const stmt = sql.prepare('SELECT * FROM eventLog WHERE id = ?');
+    const event = stmt.get(`${args[0]}`);
     console.log(
-      `Menu ${this._menu} started by ${user.username}.`
+      `Menu ${this._menu} started by ${event.user}.`
     );
-    const gameChoice = args[0];
+
+
     const pollMessage = await (msgObject as Discord.Message).edit(Menus.destinyMenus[0].destinyMain);
-    await msgObject.channel.send(`${gameChoice}`);
+    await msgObject.channel.send('Worked');
     const bc = await msgObject.id;
     await console.log(`${bc}`);
 
@@ -64,7 +70,7 @@ export default class Destiny2 implements IBotMenu {
 
 
           if (reaction.emoji.name === ConfigFile.config.reactionNumbers[2]) {
-            console.log(`${msgObject.author.username} chose ${gameChoice}`);
+            console.log(`${msgObject.author.username} chose ${event.game}`);
             msgObject.channel.send('Overwatch Selected');
             (pollMessage as Discord.Message).edit(
               Menus.destinyMenus[0].destinyMain

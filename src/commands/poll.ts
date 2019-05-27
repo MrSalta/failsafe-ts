@@ -3,11 +3,12 @@ import { IBotMenu } from '../api';
 import * as ConfigFile from '../config';
 import * as Menus from '../data/menus';
 import * as SQLite from 'better-sqlite3';
-const sql = new SQLite('../record.sqlite');
+const sql = new SQLite('./record.sqlite');
 
 // Load client and declare variable
 const client: Discord.Client = this.Client;
 let gameChoice = undefined;
+let event = undefined;
 const menus: IBotMenu[] = [];
 function loadMenus(menusPath: string) {
   // Stop if no commands
@@ -32,7 +33,7 @@ async function handleMenu(msg: Discord.Message, user: Discord.User) {
 
   // Split string into the args
   const menu = `${gameChoice}`.toLowerCase();
-  const args = [`${gameChoice}`];
+  const args = [`${event.id}`];
   for (const menuClass of menus) {
 
     // Attempt to execute, but ready for it not to go well or younkow
@@ -71,6 +72,7 @@ export default class Poll implements IBotMenu {
     return command === this._menu;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async runCommand(args: string[], msgObject: Discord.Message, _client: Discord.Client): Promise<void> {
     await msgObject.delete(0);
 
@@ -78,11 +80,12 @@ export default class Poll implements IBotMenu {
     const theTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     // Create event in database
-    const event = { id: `${msgObject.author.id}-${theTime}`, user: msgObject.author.username };
-    const newEvent = sql.prepare('INSERT OR REPLACE INTO eventLog (id, user) VALUES (@id, @user);');
-    newEvent.run(event);
+    event = { id: `${msgObject.author.id}-${theTime}`, user: msgObject.author.username };
+    const newEvent = sql.prepare('INSERT OR REPLACE INTO eventLog (id, user) VALUES (?, ?);');
+    const info = newEvent.run(`${event.id}`, `${event.user}`);
     console.log(
       `Command ${this._menu} created id ${event.id} and was started by ${msgObject.author.username}.`);
+    console.log(info.changes);
 
     // Format check
     if (args.length < 1) { return; }
@@ -137,8 +140,8 @@ export default class Poll implements IBotMenu {
             // Log and add choice to database
             gameChoice = 'Destiny2';
             console.log(`${msgObject.author.username} chose ${gameChoice}`);
-            const gameResult = sql.prepare(`UPDATE INTO eventLog WHERE id = ${event.id} (game) VALUES (?);`);
-            const eventGame = gameResult.run(gameChoice);
+            const gameResult = sql.prepare('UPDATE eventLog SET game = ? WHERE id = ?;');
+            const eventGame = gameResult.run(`${gameChoice}`, `${event.id}`);
             console.log(eventGame.changes);
 
             // Run Destiny2 Menu Module

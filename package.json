@@ -20,6 +20,9 @@
     "@types/better-sqlite3": "^5.2.3",
     "better-sqlite3": "^5.4.0",
     "discord.js": "^11.4.2",
-    "dotenv": "^7.0.0"
+    "dotenv": "^7.0.0",
+    "node-gyp": "^4.0.0",
+    "sequelize": "^5.8.6",
+    "sqlite3": "^4.0.8"
   }
 }
