@@ -14,7 +14,7 @@ export default class TemplateCommand implements IBotCommand {
     return command === this._command;
   }
 
-  async runCommand(args: string[], msgObject: Discord.Message, client: Discord.Client): Promise<void> {
+  async runCommand(args: string, msgObject: Discord.Message, client: Discord.Client): Promise<void> {
 
     // Did it work?
     msgObject.channel.send('All loaded and good.');

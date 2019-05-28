@@ -88,7 +88,7 @@ export default class Poll implements IBotMenu {
   async runCommand(args: string[], msgObject: Discord.Message, _client: Discord.Client): Promise<void> {
     await msgObject.delete(0);
 
-    const eventTitle = args.slice(0, args.length).join(' ');
+    const eventTitle = args;
     await msgObject.channel.send('What time would you like this to start?').then(async () => {
       await msgObject.channel.awaitMessages(response => response.content, { maxMatches: 1, time: 60000, errors: ['time'] })
         .then(collected => {

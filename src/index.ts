@@ -1,6 +1,6 @@
 import * as Discord from 'discord.js';
 import * as ConfigFile from './config';
-import { IBotCommand } from './api';
+import { IBotCommand, IBotContext } from './api';
 require('dotenv').config();
 import * as SQLite from 'better-sqlite3';
 const sql = new SQLite('./record.sqlite');
@@ -15,7 +15,37 @@ async function handleCommand(msg: Discord.Message) {
 
   // Split string into the args
   const command = msg.content.split(' ')[0].replace(ConfigFile.config.prefix, '').toLowerCase();
-  const args = msg.content.split(' ').slice(1);
+  const string = msg.content.split(' ').slice(1);
+  const args = string.slice(0, string.length).join(' ');
+
+  for (const commandClass of commands) {
+
+    // Attempt to execute, but ready for it not to go well or younkow
+    try {
+
+      // Check if our command class is the right one
+      if (!commandClass.isThisCommand(command)) {
+
+        // Keep looping if no
+        continue;
+      }
+
+      // Run command
+      await commandClass.runCommand(args, msg, client);
+
+    }
+    catch (exception) {
+
+      // IfError, log it
+      console.log(exception);
+    }
+  }
+}
+async function imageContext(msg: Discord.Message) {
+
+  // Split string into the args
+  const command = 'eduContext';
+  const args = msg.attachments.first().url;
 
   for (const commandClass of commands) {
 
@@ -76,12 +106,19 @@ client.on('ready', () => {
   }
 });
 
-client.on('message', msg => {
+client.on('message', async msg => {
 
   // Not from bot
   if (msg.author.bot) { return; }
 
   if (msg.channel.type == 'dm') { return; }
+
+  if (msg.attachments.size > 0) {
+    if (msg.content == '') {
+      await imageContext(msg);
+      console.log('Context is firing');
+    }
+  }
   // Also look for prefix
   if (!msg.content.startsWith(ConfigFile.config.prefix)) { return; }
 

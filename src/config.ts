@@ -1,7 +1,9 @@
 export const config = {
   prefix: '?',
-  commands: ['testCommand', 'serverinfo', 'poll', 'destiny2'],
+  commands: ['testCommand', 'serverinfo', 'poll', 'destiny2', 'eduContext'],
   menus: ['destiny2'],
+  noContexts: ['eduContext'],
+
   reactionNumbers: [
     '\u0030\u20E3',
     '\u0031\u20E3',
