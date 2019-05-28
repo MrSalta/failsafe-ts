@@ -1,6 +1,8 @@
 import * as Discord from 'discord.js';
 import { IBotContext } from '../api';
 import * as ConfigFile from '../config';
+import { encode } from 'punycode';
+let imageURL;
 
 export default class EduContext implements IBotContext {
 
@@ -15,11 +17,19 @@ export default class EduContext implements IBotContext {
     return command === this._noContext;
   }
 
+  // eslint-disable-next-line no-shadow
   async runCommand(args: string, msgObject: Discord.Message, client: Discord.Client): Promise<void> {
+    await msgObject.delete();
+    const contextMaker = new Discord.RichEmbed()
+      .setTitle('The Contextifier!')
+      .setImage(imageURL)
+      .setThumbnail(imageURL)
+      .setDescription(`Hello @${msgObject.author.username}! It looks like you were posting this image without any sort of context. Please reply with some context, and I'll post your image.`);
 
-    const imageURL = args;
+    imageURL = args;
     // Did it work?
     console.log(imageURL);
-    await msgObject.channel.send('It worked');
+    const sourceChannel = msgObject.channel.id;
+    await msgObject.author.send(contextMaker);
   }
 }
