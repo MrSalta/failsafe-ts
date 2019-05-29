@@ -8,46 +8,77 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Discord = require("discord.js");
-const client = new Discord.Client();
+let response;
 class EduContext {
     constructor() {
         this._noContext = 'eduContext';
     }
     help() {
-        // eslint-disable-next-line quotes
-        return `Prompts the user (usually Edu) to provide context for the image`;
+        return 'Prompts the user (usually Edu) to provide context for the image';
     }
     isThisCommand(command) {
         return command === this._noContext;
     }
-    // eslint-disable-next-line no-shadow
     runCommand(args, msgObject, client) {
         return __awaiter(this, void 0, void 0, function* () {
+            // First grab information about the original message so we can put it back later
             const ogID = yield msgObject.id;
             const imageURL = yield args;
+            const sourceChannel = msgObject.channel.id;
+            console.log(imageURL);
+            // Contextifier prompt embed
             const contextMaker = {
                 'title': 'The Contextifier!',
-                'description': `Hello @${msgObject.author.username}! It looks like you were posting this image without any sort of context. Please reply with some context, and I'll post your image.`,
+                'description': `😄: Greetings, ${msgObject.author.username}! ` +
+                    'It looks like you were posting this image without any sort of context. ' +
+                    'Please reply with some context, and I\'ll post your image.' +
+                    '\n' + '😒: If it really means so much to you.',
                 'image': {
                     'url': imageURL,
                 },
             };
-            // Did it work?
-            console.log(imageURL);
-            yield msgObject.channel.fetchMessage(ogID).then(msg => msg.delete());
-            const sourceChannel = msgObject.channel.id;
-            const promptEmbed = yield msgObject.author.send({ embed: contextMaker }).then(() => __awaiter(this, void 0, void 0, function* () {
-                yield promptEmbed.channel.awaitMessages(response => response.content, { maxMatches: 1, time: 120000, errors: ['time'] })
+            const promptEmbed = yield msgObject.author.send({ embed: contextMaker }).then((posted) => __awaiter(this, void 0, void 0, function* () {
+                // Delete message
+                if (posted) {
+                    yield msgObject.channel.fetchMessage(ogID).then(msg => msg.delete());
+                }
+                // eslint-disable-next-line no-shadow
+                yield posted.channel.awaitMessages(response => response.content, { maxMatches: 1, time: 500000, errors: ['time'] })
                     .then(collected => {
-                    const response = collected.first().content;
+                    response = collected.first().content;
+                    // Contextified embed
+                    const withContext = {
+                        'title': 'Contextified Post Incoming',
+                        'thumbnail': {
+                            'url': msgObject.author.avatarURL,
+                        },
+                        'description': '😄: Greetings! ' +
+                            `${msgObject.author.username} wanted to share this image with you, but forgot to provide any context. ` +
+                            'Here it is!' +
+                            '\n' + '😒: *sigh* ... You\'re welcome, I guess.',
+                        'image': {
+                            'url': imageURL,
+                        },
+                        'fields': [
+                            {
+                                name: '\u200b',
+                                value: '\u200b',
+                            },
+                            {
+                                'name': response,
+                                'value': '.',
+                            },
+                        ],
+                    };
+                    msgObject.channel.send({ embed: withContext });
                     console.log(response);
                 })
                     .catch(collected => console.log('Error'));
             }));
             console.log(ogID);
+            yield msgObject.author.send('It has been sent!');
         });
     }
 }
 exports.default = EduContext;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZWR1Q29udGV4dC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uL3NyYy9jb21tYW5kcy9lZHVDb250ZXh0LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7QUFBQSxzQ0FBc0M7QUFJdEMsTUFBTSxNQUFNLEdBQW1CLElBQUksT0FBTyxDQUFDLE1BQU0sRUFBRSxDQUFDO0FBRXBELE1BQXFCLFVBQVU7SUFBL0I7UUFFbUIsZUFBVSxHQUFHLFlBQVksQ0FBQTtJQXlDNUMsQ0FBQztJQXZDQyxJQUFJO1FBQ0Ysa0NBQWtDO1FBQ2xDLE9BQU8saUVBQWlFLENBQUM7SUFDM0UsQ0FBQztJQUVELGFBQWEsQ0FBQyxPQUFlO1FBQzNCLE9BQU8sT0FBTyxLQUFLLElBQUksQ0FBQyxVQUFVLENBQUM7SUFDckMsQ0FBQztJQUVELHFDQUFxQztJQUMvQixVQUFVLENBQUMsSUFBWSxFQUFFLFNBQTBCLEVBQUUsTUFBc0I7O1lBQy9FLE1BQU0sSUFBSSxHQUFHLE1BQU0sU0FBUyxDQUFDLEVBQUUsQ0FBQztZQUNoQyxNQUFNLFFBQVEsR0FBRyxNQUFNLElBQUksQ0FBQztZQUM1QixNQUFNLFlBQVksR0FBRztnQkFDbkIsT0FBTyxFQUFFLG1CQUFtQjtnQkFDNUIsYUFBYSxFQUFFLFVBQVUsU0FBUyxDQUFDLE1BQU0sQ0FBQyxRQUFRLG9JQUFvSTtnQkFDdEwsT0FBTyxFQUFFO29CQUNQLEtBQUssRUFBRSxRQUFRO2lCQUNoQjthQUNGLENBQUM7WUFFRixlQUFlO1lBQ2YsT0FBTyxDQUFDLEdBQUcsQ0FBQyxRQUFRLENBQUMsQ0FBQztZQUN0QixNQUFNLFNBQVMsQ0FBQyxPQUFPLENBQUMsWUFBWSxDQUFDLElBQUksQ0FBQyxDQUFDLElBQUksQ0FBQyxHQUFHLENBQUMsRUFBRSxDQUFDLEdBQUcsQ0FBQyxNQUFNLEVBQUUsQ0FBQyxDQUFDO1lBQ3JFLE1BQU0sYUFBYSxHQUFHLFNBQVMsQ0FBQyxPQUFPLENBQUMsRUFBRSxDQUFDO1lBQzNDLE1BQU0sV0FBVyxHQUFHLE1BQU0sU0FBUyxDQUFDLE1BQU0sQ0FBQyxJQUFJLENBQUMsRUFBRSxLQUFLLEVBQUUsWUFBWSxFQUFFLENBQUMsQ0FBQyxJQUFJLENBQUMsR0FBUyxFQUFFO2dCQUN2RixNQUFPLFdBQTBDLENBQUMsT0FBTyxDQUFDLGFBQWEsQ0FBQyxRQUFRLENBQUMsRUFBRSxDQUFDLFFBQVEsQ0FBQyxPQUFPLEVBQUUsRUFBRSxVQUFVLEVBQUUsQ0FBQyxFQUFFLElBQUksRUFBRSxNQUFNLEVBQUUsTUFBTSxFQUFFLENBQUMsTUFBTSxDQUFDLEVBQUUsQ0FBQztxQkFDckosSUFBSSxDQUFDLFNBQVMsQ0FBQyxFQUFFO29CQUNoQixNQUFNLFFBQVEsR0FBRyxTQUFTLENBQUMsS0FBSyxFQUFFLENBQUMsT0FBTyxDQUFDO29CQUMzQyxPQUFPLENBQUMsR0FBRyxDQUFDLFFBQVEsQ0FBQyxDQUFDO2dCQUN4QixDQUFDLENBQUM7cUJBQ0QsS0FBSyxDQUFDLFNBQVMsQ0FBQyxFQUFFLENBQ2pCLE9BQU8sQ0FBQyxHQUFHLENBQUMsT0FBTyxDQUFDLENBQ3JCLENBQUM7WUFDTixDQUFDLENBQUEsQ0FBQyxDQUFDO1lBQ0gsT0FBTyxDQUFDLEdBQUcsQ0FBQyxJQUFJLENBQUMsQ0FBQztRQUdwQixDQUFDO0tBQUE7Q0FDRjtBQTNDRCw2QkEyQ0MifQ==
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZWR1Q29udGV4dC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uL3NyYy9jb21tYW5kcy9lZHVDb250ZXh0LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7QUFHQSxJQUFJLFFBQVEsQ0FBQztBQUViLE1BQXFCLFVBQVU7SUFBL0I7UUFFbUIsZUFBVSxHQUFHLFlBQVksQ0FBQTtJQThFNUMsQ0FBQztJQTVFQyxJQUFJO1FBQ0YsT0FBTyxpRUFBaUUsQ0FBQztJQUMzRSxDQUFDO0lBRUQsYUFBYSxDQUFDLE9BQWU7UUFDM0IsT0FBTyxPQUFPLEtBQUssSUFBSSxDQUFDLFVBQVUsQ0FBQztJQUNyQyxDQUFDO0lBRUssVUFBVSxDQUFDLElBQVksRUFBRSxTQUEwQixFQUFFLE1BQXNCOztZQUUvRSxnRkFBZ0Y7WUFDaEYsTUFBTSxJQUFJLEdBQUcsTUFBTSxTQUFTLENBQUMsRUFBRSxDQUFDO1lBQ2hDLE1BQU0sUUFBUSxHQUFHLE1BQU0sSUFBSSxDQUFDO1lBQzVCLE1BQU0sYUFBYSxHQUFHLFNBQVMsQ0FBQyxPQUFPLENBQUMsRUFBRSxDQUFDO1lBQzNDLE9BQU8sQ0FBQyxHQUFHLENBQUMsUUFBUSxDQUFDLENBQUM7WUFFdEIsNEJBQTRCO1lBQzVCLE1BQU0sWUFBWSxHQUFHO2dCQUNuQixPQUFPLEVBQUUsbUJBQW1CO2dCQUM1QixhQUFhLEVBQUUsa0JBQWtCLFNBQVMsQ0FBQyxNQUFNLENBQUMsUUFBUSxJQUFJO29CQUM1RCx5RUFBeUU7b0JBQ3pFLDREQUE0RDtvQkFDNUQsSUFBSSxHQUFHLHdDQUF3QztnQkFDakQsT0FBTyxFQUFFO29CQUNQLEtBQUssRUFBRSxRQUFRO2lCQUNoQjthQUNGLENBQUM7WUFFRixNQUFNLFdBQVcsR0FBRyxNQUFNLFNBQVMsQ0FBQyxNQUFNLENBQUMsSUFBSSxDQUFDLEVBQUUsS0FBSyxFQUFFLFlBQVksRUFBRSxDQUFDLENBQUMsSUFBSSxDQUFDLENBQU0sTUFBTSxFQUFDLEVBQUU7Z0JBQzNGLGlCQUFpQjtnQkFDakIsSUFBSSxNQUFNLEVBQUU7b0JBQ1YsTUFBTSxTQUFTLENBQUMsT0FBTyxDQUFDLFlBQVksQ0FBQyxJQUFJLENBQUMsQ0FBQyxJQUFJLENBQUMsR0FBRyxDQUFDLEVBQUUsQ0FBQyxHQUFHLENBQUMsTUFBTSxFQUFFLENBQUMsQ0FBQztpQkFDdEU7Z0JBQ0QscUNBQXFDO2dCQUNyQyxNQUFPLE1BQTBCLENBQUMsT0FBTyxDQUFDLGFBQWEsQ0FBQyxRQUFRLENBQUMsRUFBRSxDQUFDLFFBQVEsQ0FBQyxPQUFPLEVBQUUsRUFBRSxVQUFVLEVBQUUsQ0FBQyxFQUFFLElBQUksRUFBRSxNQUFNLEVBQUUsTUFBTSxFQUFFLENBQUMsTUFBTSxDQUFDLEVBQUUsQ0FBQztxQkFDckksSUFBSSxDQUFDLFNBQVMsQ0FBQyxFQUFFO29CQUNoQixRQUFRLEdBQUcsU0FBUyxDQUFDLEtBQUssRUFBRSxDQUFDLE9BQU8sQ0FBQztvQkFFckMscUJBQXFCO29CQUNyQixNQUFNLFdBQVcsR0FBRzt3QkFDbEIsT0FBTyxFQUFFLDRCQUE0Qjt3QkFDckMsV0FBVyxFQUFFOzRCQUNYLEtBQUssRUFBRSxTQUFTLENBQUMsTUFBTSxDQUFDLFNBQVM7eUJBQ2xDO3dCQUNELGFBQWEsRUFBRSxpQkFBaUI7NEJBQzlCLEdBQUcsU0FBUyxDQUFDLE1BQU0sQ0FBQyxRQUFRLDJFQUEyRTs0QkFDdkcsYUFBYTs0QkFDYixJQUFJLEdBQUcsMENBQTBDO3dCQUNuRCxPQUFPLEVBQUU7NEJBQ1AsS0FBSyxFQUFFLFFBQVE7eUJBQ2hCO3dCQUNELFFBQVEsRUFBRTs0QkFDUjtnQ0FDRSxJQUFJLEVBQUUsUUFBUTtnQ0FDZCxLQUFLLEVBQUUsUUFBUTs2QkFDaEI7NEJBQ0Q7Z0NBQ0UsTUFBTSxFQUFFLFFBQVE7Z0NBQ2hCLE9BQU8sRUFBRSxHQUFHOzZCQUNiO3lCQUNGO3FCQUNGLENBQUM7b0JBQ0YsU0FBUyxDQUFDLE9BQU8sQ0FBQyxJQUFJLENBQUMsRUFBRSxLQUFLLEVBQUUsV0FBVyxFQUFFLENBQUMsQ0FBQztvQkFDL0MsT0FBTyxDQUFDLEdBQUcsQ0FBQyxRQUFRLENBQUMsQ0FBQztnQkFFeEIsQ0FBQyxDQUFDO3FCQUNELEtBQUssQ0FBQyxTQUFTLENBQUMsRUFBRSxDQUNqQixPQUFPLENBQUMsR0FBRyxDQUFDLE9BQU8sQ0FBQyxDQUNyQixDQUFDO1lBQ04sQ0FBQyxDQUFBLENBQUMsQ0FBQztZQUVILE9BQU8sQ0FBQyxHQUFHLENBQUMsSUFBSSxDQUFDLENBQUM7WUFDbEIsTUFBTSxTQUFTLENBQUMsTUFBTSxDQUFDLElBQUksQ0FBQyxtQkFBbUIsQ0FBQyxDQUFDO1FBR25ELENBQUM7S0FBQTtDQUNGO0FBaEZELDZCQWdGQyJ9
