@@ -18,7 +18,6 @@ export default class EduContext implements IBotContext {
     // First grab information about the original message so we can put it back later
     const ogID = await msgObject.id;
     const imageURL = await args;
-    const sourceChannel = msgObject.channel.id;
     console.log(imageURL);
 
     // Contextifier prompt embed
