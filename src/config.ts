@@ -1,6 +1,6 @@
 export const config = {
   prefix: '?',
-  commands: ['testCommand', 'serverinfo', 'poll', 'destiny2', 'eduContext'],
+  commands: ['serverinfo', 'poll', 'destiny2', 'eduContext'],
   menus: ['destiny2'],
   noContexts: ['eduContext'],
 
