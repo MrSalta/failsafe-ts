@@ -1,5 +1,6 @@
 import * as Discord from 'discord.js';
 import { IBotContext } from '../api';
+import * as cfg from '../config';
 
 export default class EduContext implements IBotContext {
 
@@ -23,6 +24,7 @@ export default class EduContext implements IBotContext {
     // Contextifier prompt embed
     const contextMaker = {
       'title': 'The Contextifier!',
+      'color': cfg.config.colors.failsafe,
       'description': `😄: Greetings, ${msgObject.author.username}! ` +
         'It looks like you were posting this image without any sort of context. ' +
         'Please reply with some context, and I\'ll post your image.' +
@@ -55,6 +57,7 @@ export default class EduContext implements IBotContext {
             'image': {
               'url': imageURL,
             },
+            'color': cfg.config.colors.failsafe,
             'fields': [
               {
                 name: '\u200b',

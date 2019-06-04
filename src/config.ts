@@ -3,6 +3,9 @@ export const config = {
   commands: ['serverinfo', 'poll', 'destiny2', 'eduContext', 'tweetContext'],
   menus: ['destiny2'],
   noContexts: ['eduContext'],
+  colors: {
+    'failsafe': '16571457',
+  },
 
   reactionNumbers: [
     '\u0030\u20E3',

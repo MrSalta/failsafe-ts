@@ -1,5 +1,6 @@
 import * as Discord from 'discord.js';
 import { IBotContext } from '../api';
+import * as config from '../config';
 
 export default class EduContext implements IBotContext {
 
@@ -19,6 +20,8 @@ export default class EduContext implements IBotContext {
     const ogID = await msgObject.id;
     const ogEmbed = await args;
 
+    // TODO - Check for at
+
     // Contextifier prompt embed
 
     const promptEmbed = await msgObject.author.send(`😄: Greetings, ${msgObject.author.username}! ` +
@@ -37,6 +40,7 @@ export default class EduContext implements IBotContext {
           // Contextified embed
           const withContext = {
             'author': ogEmbed.author,
+            'color': config.config.colors.failsafe,
             'description': ogEmbed.description,
             'footer': ogEmbed.footer,
             'url': ogEmbed.url,
