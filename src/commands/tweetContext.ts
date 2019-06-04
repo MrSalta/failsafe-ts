@@ -21,6 +21,17 @@ export default class EduContext implements IBotContext {
     const ogEmbed = await args;
 
     // TODO - Check for at
+    if (ogEmbed.description.startsWith('@')) {
+      const threadEmbed = await msgObject.author.send(`😄: Greetings, ${msgObject.author.username}! ` +
+        'It looks like you\'re posting a reply. How confusing! ' +
+        '\n' + '😒: So, like... I\'ve deleted it. Post the main tweet instead.', { embed: ogEmbed }).then(async posted => {
+        // Delete message
+        if (posted) {
+          await msgObject.channel.fetchMessage(ogID).then(msg => msg.delete());
+        }
+      });
+      return;
+    }
 
     // Contextifier prompt embed
 
