@@ -71,6 +71,35 @@ async function imageContext(msg: Discord.Message) {
   }
 }
 
+async function tweetContext(msg: Discord.Message) {
+
+  // Split string into the args
+  const command = 'tweetContext';
+  const args: object = msg.embeds[0];
+
+  for (const commandClass of commands) {
+
+    // Attempt to execute, but ready for it not to go well or younkow
+    try {
+
+      // Check if our command class is the right one
+      if (!commandClass.isThisCommand(command)) {
+
+        // Keep looping if no
+        continue;
+      }
+
+      // Run command
+      await commandClass.runCommand(args, msg, client);
+
+    }
+    catch (exception) {
+
+      // IfError, log it
+      console.log(exception);
+    }
+  }
+}
 function loadCommands(commandsPath: string) {
 
   // Stop if no commands
@@ -116,8 +145,10 @@ client.on('message', async msg => {
   if (msg.attachments.size > 0) {
     if (msg.content == '') {
       await imageContext(msg);
-      console.log('Context is firing');
     }
+  }
+  if (msg.embeds.length > 0 && (msg.content.split(' ')).length <= 2) {
+    await tweetContext(msg);
   }
   // Also look for prefix
   if (!msg.content.startsWith(ConfigFile.config.prefix)) { return; }

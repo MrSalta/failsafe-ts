@@ -5,7 +5,7 @@ export interface IBotCommand {
 
   isThisCommand(command: string): boolean;
 
-  runCommand(args: string, msgObject: Discord.Message, client: Discord.Client): Promise<void>;
+  runCommand(args: any, msgObject: Discord.Message, client: Discord.Client): Promise<void>;
 
 }
 export interface IBotMenu {
@@ -21,6 +21,6 @@ export interface IBotContext {
 
   isThisCommand(noContext: string): boolean;
 
-  runCommand(args: string, msgObject: Discord.Message, client: Discord.Client): Promise<void>;
+  runCommand(args: any, msgObject: Discord.Message, client: Discord.Client): Promise<void>;
 
 }
