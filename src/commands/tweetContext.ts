@@ -2,7 +2,7 @@ import * as Discord from 'discord.js';
 import { IBotContext } from '../api';
 import * as config from '../config';
 
-export default class EduContext implements IBotContext {
+export default class TweetContext implements IBotContext {
 
   private readonly _noContext = 'tweetContext'
 
@@ -20,7 +20,7 @@ export default class EduContext implements IBotContext {
     const ogID = await msgObject.id;
     const ogEmbed = await args;
 
-    // TODO - Check for at
+    // Check for the atmark to see if it's a reply versus a thread
     if (ogEmbed.description.startsWith('@')) {
       const threadEmbed = await msgObject.author.send(`😄: Greetings, ${msgObject.author.username}! ` +
         'It looks like you\'re posting a reply. How confusing! ' +
