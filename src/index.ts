@@ -150,6 +150,9 @@ client.on('message', async msg => {
     }
   }
   if (msg.content.includes('twitter')) {
+
+    // This delay allows Discord to create the tweet embed.
+    // Without the delay, this check happens before the embed is created, and it misses the tweet.
     await delay(1000);
     if (msg.embeds.length > 0 && (msg.content.split(' ')).length <= 2) {
       await tweetContext(msg);
