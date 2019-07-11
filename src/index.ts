@@ -11,6 +11,8 @@ const client: Discord.Client = new Discord.Client();
 
 const commands: IBotCommand[] = [];
 
+const delay = ms => new Promise(res => setTimeout(res, ms));
+
 async function handleCommand(msg: Discord.Message) {
 
   // Split string into the args
@@ -147,8 +149,11 @@ client.on('message', async msg => {
       await imageContext(msg);
     }
   }
-  if (msg.embeds.length > 0 && (msg.content.split(' ')).length <= 2) {
-    await tweetContext(msg);
+  if (msg.content.includes('twitter')) {
+    await delay(1000);
+    if (msg.embeds.length > 0 && (msg.content.split(' ')).length <= 2) {
+      await tweetContext(msg);
+    }
   }
   // Also look for prefix
   if (!msg.content.startsWith(ConfigFile.config.prefix)) { return; }
