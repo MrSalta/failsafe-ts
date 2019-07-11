@@ -49,7 +49,7 @@ export const destinyMenus = [
       .addField('Regular field title', 'Some value here')
       .addBlankField()
       .addField('1️⃣ Gambit', '--', true)
-      .addField('2️⃣ Gabit Prime', '--', true)
+      .addField('2️⃣ Gambit Prime', '--', true)
       .addField('3️⃣ The Reckoning', '--', true)
       .setImage(Icons.icons.Gambit)
       .setTimestamp()

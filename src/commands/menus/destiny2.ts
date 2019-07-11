@@ -6,6 +6,7 @@ import * as SQLite from 'better-sqlite3';
 const sql = new SQLite('./record.sqlite');
 
 let activityChoice: string = undefined;
+let levelChoice: string = undefined;
 
 export default class Destiny2 implements IBotMenu {
   private readonly _menu = 'destiny2';
@@ -66,18 +67,60 @@ export default class Destiny2 implements IBotMenu {
             console.log(`${user.username} chose ${activityChoice}`);
 
             // Run Gambit Menu
-            (pollMessage as Discord.Message).edit(Menus.destinyMenus[1].destinyGambit);
+            await (pollMessage as Discord.Message).edit(Menus.destinyMenus[1].destinyGambit);
 
-          }
+            await (pollMessage as Discord.Message)
+              .clearReactions();
 
-
-          if (reaction.emoji.name === ConfigFile.config.reactionNumbers[2]) {
-            console.log(`${msgObject.author.username} chose ${event.game}`);
-            msgObject.channel.send('Overwatch Selected');
-            (pollMessage as Discord.Message).edit(
-              Menus.destinyMenus[0].destinyMain
+            await (pollMessage as Discord.Message).react(
+              ConfigFile.config.reactionNumbers[1]
             );
-            return;
+            await (pollMessage as Discord.Message).react(
+              ConfigFile.config.reactionNumbers[2]
+            );
+            await (pollMessage as Discord.Message).react(
+              ConfigFile.config.reactionNumbers[3]
+            );
+
+            await (pollMessage as Discord.Message)
+              .awaitReactions(filter, { max: 1, time: 60000 })
+              // eslint-disable-next-line no-shadow
+              .then(async levelCollected => {
+                // eslint-disable-next-line no-shadow
+                const reactionLevel = levelCollected.first();
+
+                try {
+                  // Level menu
+                  if (reactionLevel.emoji.name === ConfigFile.config.reactionNumbers[1]) {
+                    reactionLevel.remove(
+                      reactionLevel.users.filter(u => u === user).first()
+                    );
+                    levelChoice = 'Gambit';
+                  }
+                  if (reactionLevel.emoji.name === ConfigFile.config.reactionNumbers[2]) {
+                    reactionLevel.remove(
+                      reactionLevel.users.filter(u => u === user).first()
+                    );
+                    levelChoice = 'Gambit Prime';
+                  }
+                  if (reactionLevel.emoji.name === ConfigFile.config.reactionNumbers[3]) {
+                    reactionLevel.remove(
+                      reactionLevel.users.filter(u => u === user).first()
+                    );
+                    levelChoice = 'The Reckoning';
+                  }
+                  const levelResult = sql.prepare('UPDATE eventLog SET level = ? WHERE id = ?;');
+                  const eventLevel = levelResult.run(`${levelChoice}`, `${event.id}`);
+                  console.log(eventLevel.changes);
+                  console.log(`${user.username} chose ${levelChoice}`);
+                  (pollMessage as Discord.Message).delete(0);
+                  msgObject.channel.send('Got it! Sending your event now.');
+                }
+                catch {
+                  msgObject.channel.send('General error');
+                  console.log('Something went wrong at level');
+                }
+              });
           }
         }
         catch {
